@@ -1,52 +1,45 @@
-name: Build and Push to ECR
-
+name: Build and Push to AWS ECR
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build-and-push:
+    if: "!contains(github.event.head_commit.message, '[skip cicd]')"
+    name: Build, Tag, and Push
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      id-token: write
-
+    
     steps:
-      - name: Checkout source
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to ECR
+      - name: Build and Tag the Docker Image
+        id: build-image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+          FULL_IMAGE_NAME: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         run: |
-          # Build image
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-                     $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          # The -t flag creates the local tag matching the full ECR path and unique tag
+          docker build -t $FULL_IMAGE_NAME .
+          echo "Image Tagged as: $FULL_IMAGE_NAME"
 
-          # Push both tags
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-
-      - name: Display image details
+      - name: Push Docker Image to Amazon ECR
+        env:
+          FULL_IMAGE_NAME: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         run: |
-          echo "Image pushed:"
-          echo " - ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}"
-          echo " - ${{ secrets.ECR_REPOSITORY }}:latest"
-
-      - name: Debug OIDC token
-        run: |
-          echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -R 'split(".") | .[1] | @base64d | fromjson'
+          # The push command uses the fully qualified name to send the image
+          docker push $FULL_IMAGE_NAME
+          echo "Image pushed successfully!"
