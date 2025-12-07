@@ -42,4 +42,4 @@ jobs:
         run: |
           # The push command uses the fully qualified name to send the image
           docker push $FULL_IMAGE_NAME
-          echo "Image pushed successfully!"
+          echo "Image pushed to AWS ECR successfully!"
