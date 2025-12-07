@@ -41,4 +41,4 @@ jobs:
           IMAGE_NAME: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         run: |
           docker push $IMAGE_NAME
-          echo "Image pushed to AWS ECR successfully!!"
+          echo "Image pushed to AWS ECR successfully!!!"
