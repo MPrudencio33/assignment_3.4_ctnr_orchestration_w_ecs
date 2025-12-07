@@ -34,7 +34,7 @@ jobs:
         run: |
           # The -t flag creates the local tag matching the full ECR path and unique tag
           docker build -t $FULL_IMAGE_NAME .
-          echo "Image Tagged as: $FULL_IMAGE_NAME"
+          echo "Image is tagged as: $FULL_IMAGE_NAME"
 
       - name: Push Docker Image to Amazon ECR
         env:
