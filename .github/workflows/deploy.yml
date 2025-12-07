@@ -32,6 +32,7 @@ jobs:
         env:
           IMAGE_NAME: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         run: |
+          echo ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
           # The -t flag creates the local tag matching the full ECR path and unique tag
           docker build -t $IMAGE_NAME .
           echo "Image is tagged as: $IMAGE_NAME"
