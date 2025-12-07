@@ -46,3 +46,7 @@ jobs:
           echo "Image pushed:"
           echo " - ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}"
           echo " - ${{ secrets.ECR_REPOSITORY }}:latest"
+
+      - name: Debug OIDC token
+        run: |
+        echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -R 'split(".") | .[1] | @base64d | fromjson'
