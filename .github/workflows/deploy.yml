@@ -49,4 +49,4 @@ jobs:
 
       - name: Debug OIDC token
         run: |
-        echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -R 'split(".") | .[1] | @base64d | fromjson'
+          echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -R 'split(".") | .[1] | @base64d | fromjson'
