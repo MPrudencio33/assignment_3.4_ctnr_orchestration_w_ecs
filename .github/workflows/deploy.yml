@@ -30,16 +30,15 @@ jobs:
       - name: Build and Tag the Docker Image
         id: build-image
         env:
-          FULL_IMAGE_NAME: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          IMAGE_NAME: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         run: |
           # The -t flag creates the local tag matching the full ECR path and unique tag
-          docker build -t $FULL_IMAGE_NAME .
-          echo "Image is tagged as: $FULL_IMAGE_NAME"
+          docker build -t $IMAGE_NAME .
+          echo "Image is tagged as: $IMAGE_NAME"
 
-      - name: Push Docker Image to Amazon ECR
+      - name: Push Docker Image to AWS ECR
         env:
           FULL_IMAGE_NAME: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         run: |
-          # The push command uses the fully qualified name to send the image
-          docker push $FULL_IMAGE_NAME
+          docker push $IMAGE_NAME
           echo "Image pushed to AWS ECR successfully!"
