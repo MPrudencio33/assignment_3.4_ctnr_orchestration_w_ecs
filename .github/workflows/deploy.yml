@@ -36,7 +36,7 @@ jobs:
           # The -t flag creates the local tag matching the full ECR path and unique tag
           # docker build -t $IMAGE_NAME .
           docker build -t 255945442255.dkr.ecr.us-east-1.amazonaws.com/marlon-flask-private-repository:latest .
-          --echo "Image is tagged as: $IMAGE_NAME"
+          # echo "Image is tagged as: $IMAGE_NAME"
 
       - name: Push Docker Image to AWS ECR
         # env:
